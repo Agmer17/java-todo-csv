@@ -1,5 +1,6 @@
 package util;
 
+import java.lang.reflect.Field;
 import java.util.Scanner;
 
 import handler.ActivityHandler;
@@ -28,7 +29,7 @@ public class MenuUtil {
             } else if (UserChoice == 2) {
                 this.deleteMenu();
             } else if (UserChoice == 3) {
-                break;
+                this.editMenu();
             } else if (UserChoice == 5) {
                 break;
             }
@@ -49,6 +50,7 @@ public class MenuUtil {
         activityHandler.printAllData();
         System.out.print("Masukan  data untuk diedit : ");
         int indexToEdit = userInput.nextInt();
+        userInput.nextLine();
 
         Activity actObject = activityHandler.findActivity(indexToEdit);
 
@@ -57,13 +59,62 @@ public class MenuUtil {
             return;
         }
 
-    }
+        for (Field field : this.getFieldsFromObject(actObject)) {
+            field.setAccessible(true);
+            Class<?> fieldType = field.getType();
+            String userNewInput = null;
 
-    private <T> T getDefaultInput(T newData, T oldData) {
-        if (newData != null) {
-            return newData;
+            try {
+                System.out.printf("Masukan value untuk %s ( %s ) : ", field.getName(), field.get(actObject));
+                userNewInput = userInput.nextLine();
+                System.out.println();
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                if (fieldType == String.class && userNewInput.trim() != "") {
+                    field.set(actObject,
+                            getDefaultInput(validateInputString(userNewInput), field.get(actObject)));
+
+                } else if (fieldType == boolean.class || fieldType == Boolean.class) {
+                    field.set(actObject, Boolean.valueOf(
+                            getDefaultInput(validateInputString(userNewInput), field.get(actObject).toString())
+
+                    ));
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
 
-        return oldData;
+        System.out.println(actObject);
+        System.out.println(activityHandler.findActivity(indexToEdit));
+
+    }
+
+    private Field[] getFieldsFromObject(Activity activityObj) {
+        Field[] fields = activityObj.getClass().getDeclaredFields();
+        return fields;
+    }
+
+    private <T> T getDefaultInput(T newVal, T oldVal) {
+        if (newVal != null) {
+            return newVal;
+        }
+
+        return oldVal;
+    }
+
+    private String validateInputString(String data) {
+        if (data.trim().isEmpty() || data == null) {
+            return null;
+        }
+
+        return data;
     }
 }

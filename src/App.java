@@ -1,3 +1,4 @@
+
 import util.MenuUtil;
 
 public class App {
@@ -5,6 +6,7 @@ public class App {
         MenuUtil menu = new MenuUtil();
 
         menu.start();
+
     }
 
 }
