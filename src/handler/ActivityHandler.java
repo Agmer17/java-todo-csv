@@ -43,4 +43,8 @@ public class ActivityHandler {
         this.activityList.remove(index);
         ioHandler.editFileData(activityList);
     }
+
+    public Activity findActivity(int index) {
+        return this.activityList.get(index);
+    }
 }

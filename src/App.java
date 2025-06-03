@@ -1,10 +1,10 @@
-import handler.ActivityHandler;
-// import model.Activity;
+import util.MenuUtil;
 
 public class App {
     public static void main(String[] args) {
-        ActivityHandler listAct = new ActivityHandler();
-        listAct.printAllData();
+        MenuUtil menu = new MenuUtil();
+
+        menu.start();
     }
 
 }
