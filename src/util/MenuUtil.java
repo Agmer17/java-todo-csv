@@ -30,6 +30,8 @@ public class MenuUtil {
                 this.deleteMenu();
             } else if (UserChoice == 3) {
                 this.editMenu();
+            } else if (UserChoice == 4) {
+                this.addDataMenu();
             } else if (UserChoice == 5) {
                 break;
             }
@@ -59,6 +61,26 @@ public class MenuUtil {
             return;
         }
 
+        this.editWithDefaultInput(actObject);
+
+        System.out.println("DATA BERHASIL DIEDIT!");
+    }
+
+    private Field[] getFieldsFromObject(Activity activityObj) {
+        Field[] fields = activityObj.getClass().getDeclaredFields();
+        return fields;
+    }
+
+    private <T> T getDefaultInput(T newVal, T oldVal) {
+        if (newVal != null) {
+            return newVal;
+        }
+
+        return oldVal;
+    }
+
+    private void editWithDefaultInput(Activity actObject) {
+
         for (Field field : this.getFieldsFromObject(actObject)) {
             field.setAccessible(true);
             Class<?> fieldType = field.getType();
@@ -75,7 +97,7 @@ public class MenuUtil {
             }
 
             try {
-                if (fieldType == String.class && userNewInput.trim() != "") {
+                if (fieldType == String.class) {
                     field.set(actObject,
                             getDefaultInput(validateInputString(userNewInput), field.get(actObject)));
 
@@ -92,22 +114,7 @@ public class MenuUtil {
 
         }
 
-        System.out.println(actObject);
-        System.out.println(activityHandler.findActivity(indexToEdit));
-
-    }
-
-    private Field[] getFieldsFromObject(Activity activityObj) {
-        Field[] fields = activityObj.getClass().getDeclaredFields();
-        return fields;
-    }
-
-    private <T> T getDefaultInput(T newVal, T oldVal) {
-        if (newVal != null) {
-            return newVal;
-        }
-
-        return oldVal;
+        this.activityHandler.saveData();
     }
 
     private String validateInputString(String data) {
@@ -116,5 +123,24 @@ public class MenuUtil {
         }
 
         return data;
+    }
+
+    private void addDataMenu() {
+        System.out.println("NAMBAH AKTIVITAS!");
+
+        System.out.print("Nama aktivitas : \n> ");
+        String newActivityName = userInput.nextLine();
+
+        System.out.print("\ndeskripsi aktivitas : \n> ");
+        String newActivityDesc = userInput.nextLine();
+
+        System.out.print("\nstatus aktivitas (true/false) : \n> ");
+        Boolean newActivityStatus = userInput.nextBoolean();
+        userInput.nextLine();
+
+        Activity newActivity = new Activity(newActivityName, newActivityDesc, newActivityStatus);
+
+        this.activityHandler.addData(newActivity);
+        System.out.println("data berhasil ditambahkan!");
     }
 }

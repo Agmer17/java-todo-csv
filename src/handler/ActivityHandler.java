@@ -34,17 +34,22 @@ public class ActivityHandler {
         }
 
         this.activityList.add(newActivity);
-        ioHandler.editFileData(this.activityList);
+        this.saveData();
         System.out.println("suskses menambah data!");
         return;
     }
 
     public void deleteData(int index) {
         this.activityList.remove(index);
-        ioHandler.editFileData(activityList);
+        this.saveData();
     }
 
     public Activity findActivity(int index) {
         return this.activityList.get(index);
+    }
+
+    public void saveData() {
+        this.ioHandler.editFileData(activityList);
+
     }
 }
